@@ -14,6 +14,12 @@ typedef struct node
 node;
 
 const unsigned int N = 100;
+// preload functions
+unsigned int hash(const char *word);
+bool load_with_ruby(char *japanese, char *english, char *reading);
+void free_them_all(node *current);
+bool unload(void);
+
 
 node *table[N];
 int main(void)
@@ -81,4 +87,57 @@ unsigned int hash(const char *word)
     // This was better than my initial idea to primarily use i multplied by letters and then divided to make sure all values were different
     // this allows for a wider range, and then simply adding i and the letter makes it so that it's different than a word of the same size and letters but in a differnt order
     return final_value;
+}
+char *check_english(char *word)
+{
+  // this accepts japanese word, and finds english
+  int index = hash(word);
+  node *current = table[index];
+  if (current == NULL)
+  {
+    return "FAILURE";
+  }
+  else if (strcmp(current->japanese, word) == 0)
+  {
+    return current->english;
+  }
+  while (current->next != NULL)
+  {
+    if (strcmp(current->japanese, japanese) == 0)
+        {
+            return current->english;
+        }
+        else
+        {
+            current = current->next;
+        }
+  }
+  return "FAILURE"
+
+}
+
+bool unload(void)
+{
+  // Change this to more efficient once the dicitonary is bigger, don't iterate over entire table at that point
+  int i;
+  for (i = 0; i < N; i++)
+  {
+    node *current;
+    if (table[i] != NULL)
+    {
+      current = table[i];
+      free_them_all(current);
+    }
+  }
+  return true;
+}
+
+void free_them_all(node *current)
+{
+    if (current->next != NULL)
+    {
+        free_them_all(current->next);
+    }
+    // printf("Freeing %s\n", current->word);
+    free(current);
 }
