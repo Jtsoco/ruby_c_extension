@@ -36,7 +36,9 @@ module Jmdict
   end
 end
 Jmdict.load_the_words()
+puts "Here's teh english word!"
 puts Jmdict.check_english('ＣＤプレーヤー')
+puts "That was it!"
 if (Jmdict.unload)
   puts "Dictionary closed!"
 end
