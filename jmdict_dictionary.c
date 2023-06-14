@@ -5,10 +5,10 @@
 
 typedef struct node
 {
-  char japanese[47];
-  char english[47];
-  char reading[47];
-  // 47 because the longest english word is 46
+  char *japanese;
+  char *english;
+  char *reading;
+  // char * for just a pointer, all words vary in size
   // TODO adjust sizes later
   struct node *next;
 }
@@ -37,7 +37,7 @@ bool load_with_ruby(char *japanese, char *english, char *reading)
   if (table[index] == NULL)
   {
     node *first_node = malloc(sizeof(struct node));
-    first_node->japanese[0] = 0;
+    first_node->japanese = NULL;
     first_node->next = NULL;
     table[index] = first_node;
     current = table[index];
@@ -53,9 +53,15 @@ bool load_with_ruby(char *japanese, char *english, char *reading)
     current->next = new;
     current = current->next;
   }
-  strcpy(current->japanese, japanese);
-  strcpy(current->english, english);
-  strcpy(current->reading, reading);
+  current->japanese = malloc(sizeof(japanese));
+  current->japanese = japanese;
+  current->english = malloc(sizeof(english));
+  current->english = english;
+  current->reading = malloc(sizeof(reading));
+  current->reading = reading;
+  // strcpy(current->japanese, japanese);
+  // strcpy(current->english, english);
+  // strcpy(current->reading, reading);
   return true;
 }
 
