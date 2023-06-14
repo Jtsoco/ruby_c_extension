@@ -10,11 +10,11 @@ module Jmdict
 
   attach_function :unload, [], :bool
 
-  def load_the_words
+  def self.load_the_words
     count = 0;
-  Eiwa.parse_file("JMdict_e.xml", type: :jmdict_e) do |entry|
-    break if count > 25
-    puts "generating word"
+    Eiwa.parse_file("JMdict_e.xml", type: :jmdict_e) do |entry|
+    break if count > 10
+    # puts "generating word"
     dictionary_line = []
     dictionary_line << entry.text
     puts dictionary_line.last
@@ -24,15 +24,19 @@ module Jmdict
     puts dictionary_line.last
     dictionary_line
     puts "word saved!"
-    Jmdict.load_with_ruby(dictionary_line[0], dictionary_line[1], dictionary_line[2])
-    puts "loaded word!"
-    count += 1
+    if (!dictionary_line.any?(nil))
+      puts "Loading word!"
+      Jmdict.load_with_ruby(dictionary_line[0], dictionary_line[1], dictionary_line[2])
+      puts "loaded word!"
+      count += 1
+      puts "Total words in dictionary: " + count.to_s
+      end
     end
     puts "loaded full dictionary"
   end
 end
-load_the_words()
-puts Jmdict.check_english('明かん')
+Jmdict.load_the_words()
+puts Jmdict.check_english('ＣＤプレーヤー')
 if (Jmdict.unload)
   puts "Dictionary closed!"
 end

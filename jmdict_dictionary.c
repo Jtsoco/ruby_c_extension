@@ -37,7 +37,7 @@ bool load_with_ruby(char *japanese, char *english, char *reading)
   if (table[index] == NULL)
   {
     node *first_node = malloc(sizeof(struct node));
-    first_node->word[0] = 0;
+    first_node->japanese[0] = 0;
     first_node->next = NULL;
     table[index] = first_node;
     current = table[index];
@@ -71,17 +71,9 @@ unsigned int hash(const char *word)
     int letter;
     for (i = 1; i < length; i++)
     {
-        // if it's capitalized, make it lower case
-        if (word[i] < '\'')
-        {
-            letter = tolower(word[i] - '\'');
-        }
-        else
-        {
-            letter = word[i] - '\'';
-        }
+      letter = word[i] - '\'';
         // shift bits, add the value of the letter, add the i value to sepearate everything
-        hash = ((hash << 5) + letter) + i;
+      hash = ((hash << 5) + letter) + i;
     }
     unsigned int final_value = hash % 100;
     // I realized shifting bits would be good after seeing the djb2 from dan bernstein, that was the inspiration for this
@@ -104,7 +96,7 @@ char *check_english(char *word)
   }
   while (current->next != NULL)
   {
-    if (strcmp(current->japanese, japanese) == 0)
+    if (strcmp(current->japanese, word) == 0)
         {
             return current->english;
         }
@@ -113,7 +105,7 @@ char *check_english(char *word)
             current = current->next;
         }
   }
-  return "FAILURE"
+  return "FAILURE";
 
 }
 
