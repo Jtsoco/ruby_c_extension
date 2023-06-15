@@ -160,6 +160,7 @@ void read_csv_with_c(void) {
 }
 // Two ways to load, I read the csv file with c, or read the xml file with ruby and pass values to c.
 // I will try both and see which is faster
+// IMPORTANT This code, loading piece by piece with ruby, eventually gives memory and heap corruption errors. Logs point to something with the eiwa gem and nokogiri. To get around this, just have it so the dictionary can be loaded by c from a seperate file. Either directly xml, or seperately csv
 bool load_with_ruby(char *japanese, char *english, char *reading)
 {
   int index = hash(japanese);
