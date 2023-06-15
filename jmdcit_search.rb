@@ -13,7 +13,7 @@ module Jmdict
   def self.load_the_words
     count = 0;
     Eiwa.parse_file("JMdict_e.xml", type: :jmdict_e) do |entry|
-    break if count > 10
+    break if count > 25
     # puts "generating word"
     dictionary_line = []
     dictionary_line << entry.text
@@ -24,7 +24,8 @@ module Jmdict
     puts dictionary_line.last
     dictionary_line
     puts "word saved!"
-    if (!dictionary_line.any?(nil))
+    puts count
+    if (!dictionary_line.any?(nil) || count != 13 || count != 12 || count != 14 || count != 17)
       puts "Loading word!"
       Jmdict.load_with_ruby(dictionary_line[0], dictionary_line[1], dictionary_line[2])
       puts "loaded word!"
