@@ -6,11 +6,14 @@ module Jmdict
 
   attach_function :load_with_ruby, [:string, :string, :string], :bool
 
+  attach_function :read_csv_with_c, [], :void
+
   attach_function :check_english, [:string], :string
 
   attach_function :unload, [], :bool
 
   def self.load_the_words
+    # This method has a major problem in it, and heap corruption after a certain amount of words. Possibly caused by Eiwa gem and it using nokogiri while the c file I made is creating a datastructure at the same time. For now, don't use
     count = 0;
     Eiwa.parse_file("JMdict_e.xml", type: :jmdict_e) do |entry|
     break if count > 25
@@ -36,8 +39,8 @@ module Jmdict
     puts "loaded full dictionary"
   end
 end
-Jmdict.load_the_words()
-puts "Here's teh english word!"
+Jmdict.read_csv_with_c
+puts "Here's the english word!"
 puts Jmdict.check_english('ＣＤプレーヤー')
 puts "That was it!"
 if (Jmdict.unload)
