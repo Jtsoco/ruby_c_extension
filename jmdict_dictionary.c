@@ -92,7 +92,7 @@ void read_csv_with_c(void) {
                           current = current->next;
                       }
                         printf("creating string\n");
-                        char string_tmp[strlen(buffer)];
+                        char string_tmp[strlen(buffer) + 1];
                         strcpy(string_tmp, buffer);
                         printf("Malloc for string\n");
                         current->japanese = malloc(sizeof(string_tmp));
@@ -108,7 +108,7 @@ void read_csv_with_c(void) {
                     else if (word_type == ENGLISH)
                     {
                       buffer[index] = 0;
-                      char string_tmp[strlen(buffer)];
+                      char string_tmp[strlen(buffer) + 1];
                       strcpy(string_tmp, buffer);
                       current->english = malloc(sizeof(string_tmp));
                       strcpy(current->english, string_tmp);
@@ -120,7 +120,7 @@ void read_csv_with_c(void) {
                      else if (word_type == READING)
                     {
                       buffer[index] = 0;
-                      char string_tmp[strlen(buffer)];
+                      char string_tmp[strlen(buffer) + 1];
                       strcpy(string_tmp, buffer);
                       current->reading = malloc(sizeof(string_tmp));
                       strcpy(current->reading, string_tmp);
@@ -132,7 +132,7 @@ void read_csv_with_c(void) {
                 } else if (c == '\n') {
                     // Handle end of line
                     buffer[index] = 0;
-                    char string_tmp[strlen(buffer)];
+                    char string_tmp[strlen(buffer) + 1];
                     strcpy(string_tmp, buffer);
                     current->reading = malloc(sizeof(string_tmp));
                     strcpy(current->reading, string_tmp);
@@ -166,51 +166,51 @@ void read_csv_with_c(void) {
 // Two ways to load, I read the csv file with c, or read the xml file with ruby and pass values to c.
 // I will try both and see which is faster
 // IMPORTANT This code, loading piece by piece with ruby, eventually gives memory and heap corruption errors. Logs point to something with the eiwa gem and nokogiri. To get around this, just have it so the dictionary can be loaded by c from a seperate file. Either directly xml, or seperately csv
-bool load_with_ruby(char *japanese, char *english, char *reading)
-{
-  int index = hash(japanese);
-  node* current;
-  printf("This is null %p\n", NULL);
-  if (table[index] == NULL)
-  {
-    printf("table index is null\n");
-    node *first_node = malloc(sizeof(struct node));
-    first_node->japanese = NULL;
-    first_node->english = NULL;
-    first_node->reading = NULL;
-    first_node->next = NULL;
-    table[index] = first_node;
-    current = table[index];
-  }
-  else
-  {
-    printf("table has existing index\n");
-    current = table[index];
-    // Bug occurs somewhere around here
-    while ( current->next != NULL)
-    {
-      printf("jumping through nodes");
-      current = current->next;
-    }
-    printf("Allocating the memory");
-    node *new = malloc(sizeof(struct node));
-    new->japanese = NULL;
-    new->english = NULL;
-    new->reading = NULL;
-    new->next = NULL;
-    current->next = new;
-    current = current->next;
-  }
-  // create dynamic memory for every string
-  printf("copying strings");
-  current->japanese = malloc(sizeof(japanese));
-  strcpy(current->japanese, japanese);
-  current->english = malloc(sizeof(english));
-  strcpy(current->english, english);
-  current->reading = malloc(sizeof(reading));
-  strcpy(current->reading, reading);
-  return true;
-}
+// bool load_with_ruby(char *japanese, char *english, char *reading)
+// {
+//   int index = hash(japanese);
+//   node* current;
+//   printf("This is null %p\n", NULL);
+//   if (table[index] == NULL)
+//   {
+//     printf("table index is null\n");
+//     node *first_node = malloc(sizeof(struct node));
+//     first_node->japanese = NULL;
+//     first_node->english = NULL;
+//     first_node->reading = NULL;
+//     first_node->next = NULL;
+//     table[index] = first_node;
+//     current = table[index];
+//   }
+//   else
+//   {
+//     printf("table has existing index\n");
+//     current = table[index];
+//     // Bug occurs somewhere around here
+//     while ( current->next != NULL)
+//     {
+//       printf("jumping through nodes");
+//       current = current->next;
+//     }
+//     printf("Allocating the memory");
+//     node *new = malloc(sizeof(struct node));
+//     new->japanese = NULL;
+//     new->english = NULL;
+//     new->reading = NULL;
+//     new->next = NULL;
+//     current->next = new;
+//     current = current->next;
+//   }
+//   // create dynamic memory for every string
+//   printf("copying strings");
+//   current->japanese = malloc(sizeof(japanese));
+//   strcpy(current->japanese, japanese);
+//   current->english = malloc(sizeof(english));
+//   strcpy(current->english, english);
+//   current->reading = malloc(sizeof(reading));
+//   strcpy(current->reading, reading);
+//   return true;
+// }
 
 unsigned int hash(const char *word)
 {
