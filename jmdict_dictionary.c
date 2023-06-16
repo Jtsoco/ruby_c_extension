@@ -14,7 +14,7 @@ typedef struct node
 }
 node;
 
-const unsigned int N = 10000;
+const unsigned int N = 100000;
 // preload functions
 unsigned int hash(const char *word);
 bool load_with_ruby(char *japanese, char *english, char *reading);
@@ -30,14 +30,15 @@ int main(void)
   read_csv_with_c();
   check_english("明かん");
   check_english("フォローウインド");
+  check_english("水石鹸");
   unload();
 }
 
 void read_csv_with_c(void) {
   char buffer[400];
-    FILE* file = fopen("medium_dictionary.csv", "r");
+    FILE* file = fopen("dictionary.csv", "r");
     if (file == NULL) {
-        printf("Error opening file: medium_dictionary.csv");
+        printf("Error opening file: dictionary.csv");
         return;
     }
     enum { NORMAL, QUOTED } state = NORMAL;
@@ -227,7 +228,7 @@ unsigned int hash(const char *word)
         // shift bits, add the value of the letter, add the i value to sepearate everything
       hash = ((hash << 5) + letter) + i;
     }
-    unsigned int final_value = hash % 10000;
+    unsigned int final_value = hash % N;
     // I realized shifting bits would be good after seeing the djb2 from dan bernstein, that was the inspiration for this
     // This was better than my initial idea to primarily use i multplied by letters and then divided to make sure all values were different
     // this allows for a wider range, and then simply adding i and the letter makes it so that it's different than a word of the same size and letters but in a differnt order
@@ -240,7 +241,7 @@ char *check_english(char *word)
   node *current = table[index];
   if (current == NULL)
   {
-    printf("FAILURE TO FIND WORD");
+    printf("FAILURE TO FIND WORD\n");
     return "FAILURE";
   }
   else if (strcmp(current->japanese, word) == 0)
@@ -283,6 +284,7 @@ bool unload(void)
       current = table[i];
       free_them_all(current);
     }
+    table[i] = NULL;
   }
   printf("All freed");
   return true;
