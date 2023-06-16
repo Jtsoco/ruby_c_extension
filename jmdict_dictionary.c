@@ -14,7 +14,7 @@ typedef struct node
 }
 node;
 
-const unsigned int N = 100;
+const unsigned int N = 10000;
 // preload functions
 unsigned int hash(const char *word);
 bool load_with_ruby(char *japanese, char *english, char *reading);
@@ -29,14 +29,15 @@ int main(void)
 {
   read_csv_with_c();
   check_english("明かん");
+  check_english("フォローウインド");
   unload();
 }
 
 void read_csv_with_c(void) {
-  char buffer[250];
-    FILE* file = fopen("dictionary.csv", "r");
+  char buffer[400];
+    FILE* file = fopen("medium_dictionary.csv", "r");
     if (file == NULL) {
-        printf("Error opening file: dictionary.csv");
+        printf("Error opening file: medium_dictionary.csv");
         return;
     }
     enum { NORMAL, QUOTED } state = NORMAL;
@@ -44,6 +45,7 @@ void read_csv_with_c(void) {
     int c;
     int index = 0;
     int table_index;
+    int count;
     node *current;
     while ((c = fgetc(file)) != EOF) {
         switch (state) {
@@ -100,6 +102,7 @@ void read_csv_with_c(void) {
                         printf("Moving to next word\n");
                         printf("Switching to English\n");
                         word_type = ENGLISH;
+                        count += 1;
                     }
                     else if (word_type == ENGLISH)
                     {
@@ -157,6 +160,7 @@ void read_csv_with_c(void) {
         }
     }
     fclose(file);
+    printf("total dictionary size: %i\n", count);
 }
 // Two ways to load, I read the csv file with c, or read the xml file with ruby and pass values to c.
 // I will try both and see which is faster
@@ -223,7 +227,7 @@ unsigned int hash(const char *word)
         // shift bits, add the value of the letter, add the i value to sepearate everything
       hash = ((hash << 5) + letter) + i;
     }
-    unsigned int final_value = hash % 100;
+    unsigned int final_value = hash % 10000;
     // I realized shifting bits would be good after seeing the djb2 from dan bernstein, that was the inspiration for this
     // This was better than my initial idea to primarily use i multplied by letters and then divided to make sure all values were different
     // this allows for a wider range, and then simply adding i and the letter makes it so that it's different than a word of the same size and letters but in a differnt order
@@ -236,7 +240,7 @@ char *check_english(char *word)
   node *current = table[index];
   if (current == NULL)
   {
-    printf("FAILURE");
+    printf("FAILURE TO FIND WORD");
     return "FAILURE";
   }
   else if (strcmp(current->japanese, word) == 0)
@@ -256,7 +260,13 @@ char *check_english(char *word)
             current = current->next;
         }
   }
-  printf("FAILURE");
+  // Turns out if searching through nodes, if the last node has a null next node it won't check it for an english word! This solves that
+  if (strcmp(current->japanese, word) == 0)
+        {
+            printf("Found the english word! %s\n", current->english);
+            return current->english;
+        }
+  printf("FAILURE TO FIND WORD %s\n", word);
   return "FAILURE";
 
 }
@@ -274,6 +284,7 @@ bool unload(void)
       free_them_all(current);
     }
   }
+  printf("All freed");
   return true;
 }
 
@@ -286,17 +297,17 @@ void free_them_all(node *current)
     // printf("Freeing %s\n", current->word);
     if (current->japanese != NULL)
     {
-      printf("freeing %s\n", current->japanese);
+      // printf("freeing %s\n", current->japanese);
       free(current->japanese);
     }
     if (current->english != NULL)
     {
-      printf("freeing %s\n", current->english);
+      // printf("freeing %s\n", current->english);
       free(current->english);
     }
     if (current->reading != NULL)
     {
-      printf("freeing %s\n", current->reading);
+      // printf("freeing %s\n", current->reading);
       free(current->reading);
     }
     free(current);

@@ -2,10 +2,10 @@ require 'csv'
 require 'eiwa'
 headers = ["Japanese", "English", "Reading"]
 count = 0
-CSV.open("dictionary.csv", 'a+') do|csv|
+CSV.open("medium_dictionary.csv", 'a+') do|csv|
   csv << headers if csv.count.eql? 0
   Eiwa.parse_file("JMdict_e.xml", type: :jmdict_e) do |entry|
-    break if count > 25
+    break if count > 10000
     puts "generating word"
     dictionary_line = []
     dictionary_line << entry.text
@@ -19,6 +19,7 @@ CSV.open("dictionary.csv", 'a+') do|csv|
     count += 1
   end
 end
+puts("Total dictionary count: #{count} words")
 # # gives us the meaning hash
 # entry.meanings.first
 # # gives array of all definitions
